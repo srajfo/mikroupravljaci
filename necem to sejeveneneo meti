@@ -1,0 +1,30 @@
+#include <Wire.h> 
+#include <LiquidCrystal_I2C.h>
+
+LiquidCrystal_I2C lcd(0x3F,16,2);
+
+bool stanje=HIGH;
+int brojac=0;
+void setup() {
+lcd.init();
+lcd.init();
+lcd.backlight();
+pinMode(13, OUTPUT);
+pinMode(12, OUTPUT);
+pinMode(2, INPUT_PULLUP);
+attachInterrupt(digitalPinToInterrupt(2),blink,FALLING);
+Serial.begin(9600);
+}
+
+void blink()
+{
+  brojac++;
+  brojac++;
+  Serial.println(brojac);
+  lcd.setCursor(3, 0);
+  lcd.print(brojac);
+}
+void loop() {
+ 
+}
+

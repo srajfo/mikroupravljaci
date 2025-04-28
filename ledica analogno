@@ -1,0 +1,21 @@
+bool trenutnoStanje=0;
+bool prosloStanje=0;
+int brojac=0;
+void setup() {
+pinMode(2,INPUT_PULLUP);
+Serial.begin(9600);
+pinMode(3,OUTPUT);
+}
+
+void loop() {
+  trenutnoStanje=digitalRead(2);
+  if(trenutnoStanje==LOW){
+  int modulo=brojac%5;
+  int vrijednost=map(modulo,0,5,0,255);
+  analogWrite(3,vrijednost);
+  brojac++;
+  delay(225);
+  }
+  
+  
+}

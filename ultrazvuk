@@ -1,0 +1,105 @@
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+
+#define trigPing 7
+#define echoPin 8
+int buzzer=5;
+
+LiquidCrystal_I2C lcd(0x3F, 20, 4);
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(trigPing,OUTPUT);
+  pinMode(echoPin,INPUT);
+  pinMode(buzzer, OUTPUT);
+
+  lcd.init();
+  lcd.init();
+  lcd.backlight();
+}
+
+void printLcd(int n) {
+  lcd.setCursor(0,0);
+  lcd.clear();
+  for(int i=0; i<n; i++) {
+    lcd.print("X");
+  }
+}
+
+
+void loop() {
+  long duration,distance;
+  digitalWrite(trigPing,LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPing,HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPing,LOW);
+  duration=pulseIn(echoPin,HIGH);
+  distance=(duration/2)/29.1;
+  /*if(distance>=0 && distance<20)
+  {
+    printLcd(4);
+    delay(100);
+    tone(buzzer, 1000);
+    delay(100);
+    noTone(buzzer);
+  }
+
+  else if(distance>=20 && distance<40)
+  {
+    printLcd(6);
+    delay(200);
+    tone(buzzer, 800);
+    delay(100);
+    noTone(buzzer);
+  }
+  else if(distance>=40 && distance<60)
+  {
+    printLcd(9);
+    delay(600);
+    tone(buzzer, 600);
+    delay(100);
+    noTone(buzzer);
+  }
+   
+  else if(distance>=60 && distance<80)
+  {
+    printLcd(12);
+    delay(800);
+    tone(buzzer, 400);
+    delay(100);
+    noTone(buzzer);
+  }
+
+  else if(distance>=80 && distance<=100)
+  {
+    printLcd(16);
+    delay(1000);
+    tone(buzzer, 200);
+    delay(100);
+    noTone(buzzer);
+  }
+  else {
+    printLcd(0);
+    noTone(buzzer);
+  }*/
+  if(distance>200 || distance<=0) {
+    noTone(buzzer);
+    lcd.clear();
+  } else {
+    printLcd(map(distance, 0, 200, 0, 16));
+    delay(map(distance, 0, 200, 1000, 50));
+    tone(buzzer, map(distance, 0, 200, 0, 1000));
+    delay(map(distance, 0, 200, 1000, 50));
+    noTone(buzzer);
+  }
+  /*lcd.setCursor(0,0);
+  lcd.clear();
+  lcd.print(distance);
+  lcd.print(" cm");*/
+
+
+
+
+  //delay(100);
+}

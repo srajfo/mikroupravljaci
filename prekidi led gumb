@@ -1,0 +1,22 @@
+bool stanje=HIGH;
+void setup() {
+pinMode(13, OUTPUT);
+pinMode(12, OUTPUT);
+pinMode(2, INPUT_PULLUP);
+attachInterrupt(digitalPinToInterrupt(2),blink,FALLING);
+}
+
+void blink()
+{
+  stanje=!stanje;
+  digitalWrite(12, stanje);
+  delay(30);
+}
+void loop() {
+  digitalWrite(13, HIGH);
+  delay(3000);
+  digitalWrite(13, LOW);
+  delay(3000);
+
+
+}

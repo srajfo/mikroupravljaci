@@ -1,0 +1,17 @@
+#include <IRremote.h>
+
+const int irPin = 12;  // Pin where the IR LED is connected
+IRsend irsend(irPin);         // Create an IRsend object
+
+void setup() {
+  pinMode(irPin, OUTPUT);  // Set pin mode to output for IR LED
+  Serial.begin(9600);      // Start serial communication for debugging
+}
+
+void loop() {
+  // Send the hex code 'E172E817' as an IR signal
+  irsend.sendNEC(0xE172E817, 32);  // NEC protocol, 32 bits
+  Serial.println("IR signal sent to turn off projector");
+  
+  delay(5000);  // Wait for 5 seconds before sending again (adjust this if needed)
+}

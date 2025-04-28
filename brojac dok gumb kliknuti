@@ -1,0 +1,39 @@
+int brojac=0;
+void setup() {
+
+pinMode(2,INPUT_PULLUP);
+Serial.begin(9600);
+}
+
+void loop() {
+  int a;
+  a=digitalRead(2);
+  if(a==LOW){
+    brojac++;
+    Serial.println(brojac);
+    delay(225);
+  }
+
+}
+______________________________________________________
+int brojac=0;
+bool trenutnoStanje=0;
+bool prosloStanje=0;
+void setup() {
+pinMode(2,INPUT_PULLUP);
+Serial.begin(9600);
+}
+
+void loop() {
+  trenutnoStanje=digitalRead(2);
+  if(trenutnoStanje!=prosloStanje)
+  {
+    if(trenutnoStanje==LOW)
+    {
+      brojac++;
+      Serial.println(brojac);
+    }
+  }
+  prosloStanje=trenutnoStanje;
+
+}

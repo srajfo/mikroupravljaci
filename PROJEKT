@@ -1,0 +1,125 @@
+#include <LiquidCrystal_I2C.h>
+#include <DHT.h>
+#define PIN_TRIG 3
+#define PIN_ECHO 2
+
+#define DHTPIN 8
+#define DHTTYPE DHT11
+
+DHT dht(DHTPIN, DHTTYPE);
+
+LiquidCrystal_I2C lcd(0x3F, 20, 4);
+const int RECV_PIN = 7;
+int sestra_gumb=13;
+int prvi=4;
+int drugi=5;
+int treci=6;
+int emergency=7;
+bool uzbuna=false;
+bool sestra_u_sobi=false;
+String pacijent="Rafael Simunic";
+void setup()
+{
+  dht.begin();
+  pinMode(PIN_TRIG, OUTPUT);
+  pinMode(PIN_ECHO, INPUT);
+  lcd.init();
+  lcd.backlight();
+  lcd.setCursor(0,0);
+  lcd.print(pacijent);
+  Serial.begin(9600);
+  pinMode(sestra_gumb, INPUT_PULLUP);
+  pinMode(prvi, INPUT_PULLUP);
+  pinMode(drugi, INPUT_PULLUP);
+  pinMode(treci, INPUT_PULLUP);
+  pinMode(emergency, INPUT_PULLUP);
+  pinMode(12,OUTPUT);
+  pinMode(11,OUTPUT);
+  pinMode(A0,OUTPUT);
+  pinMode(A1,OUTPUT);
+  pinMode(A2,OUTPUT);
+}
+void loop()
+{
+  if(digitalRead(prvi)==LOW)
+  {
+    delay(50);
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("i am hungry!");
+  }
+  if(digitalRead(drugi)==LOW)
+  {
+    delay(50);
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("i am thirsty!");
+  }
+  if(digitalRead(treci)==LOW)
+  {
+    delay(50);
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("go to toilet!");
+  }
+  if(digitalRead(emergency)==LOW && uzbuna==false)
+  {
+    delay(50);
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("EMERGENCY!!!");
+    uzbuna=true;
+  }
+  else if (digitalRead(emergency)==LOW && uzbuna==true)
+  {
+    delay(50);
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Emergency over");
+    uzbuna=false;
+  }
+  if(digitalRead(sestra_gumb)==LOW && sestra_u_sobi==false)
+  {
+    digitalWrite(A1,HIGH);
+    digitalWrite(A2,LOW);
+    sestra_u_sobi=true;
+    delay(500);
+  }
+  else if(digitalRead(sestra_gumb)==LOW && sestra_u_sobi==true)
+  {
+    digitalWrite(A1,LOW);
+    digitalWrite(A2,HIGH);
+    sestra_u_sobi=false;
+    delay(500);
+  }
+  if (uzbuna)
+  {
+    tone(A0, 1000); 
+  }
+  else
+  {
+    noTone(A0); 
+  }
+  digitalWrite(PIN_TRIG, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(PIN_TRIG, LOW);
+  int trajanje = pulseIn(PIN_ECHO, HIGH);
+  int centimetri=trajanje/58;
+  Serial.print("udaljenost u cm: ");
+  Serial.println(centimetri);
+  if(centimetri>50)
+  {
+    analogWrite(A0, 128); 
+    delay(250);
+    analogWrite(A0, 0);  
+  }
+  float temperatura=dht.readTemperature();
+  float vlaga=dht.readHumidity();
+  lcd.setCursor(0,1);
+  lcd.print("T:");
+  lcd.print(temperatura);
+  lcd.print("C ");
+  lcd.print("H:");
+  lcd.print(vlaga);
+  lcd.print("%");
+}
