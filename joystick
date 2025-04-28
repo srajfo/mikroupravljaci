@@ -1,0 +1,16 @@
+
+const int VRx = A0;
+const int ledica=9; 
+void setup() {
+  Serial.begin(9600);
+  pinMode(A1, OUTPUT);
+}
+
+void loop() {
+  int xPosition = analogRead(VRx); 
+  Serial.print("X: ");
+  Serial.println(xPosition);
+  int svetli=xPosition/4;
+  analogWrite(ledica, svetli);
+  //delay(100); 
+}
