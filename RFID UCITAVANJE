@@ -1,0 +1,58 @@
+#include <SPI.h>
+#include <MFRC522.h>
+
+#define RST_PIN         9
+#define SS_PIN          10
+
+MFRC522 mfrc522(SS_PIN, RST_PIN);  // Create MFRC522 instance
+
+bool door = false;
+
+// Replace with your card's UID
+byte allowedUID[] = {0x2A, 0xCB, 0x41, 0x02}; // <-- PUT YOUR UID HERE (example from your output)
+
+void setup() {
+  Serial.begin(9600);
+  while (!Serial);
+  SPI.begin();
+  mfrc522.PCD_Init();
+  Serial.println("Place your card/tag on the reader...");
+}
+
+void loop() {
+  door = false;  // Reset door status every loop
+
+  // Look for new cards
+  if (!mfrc522.PICC_IsNewCardPresent()) {
+    return;
+  }
+
+  if (!mfrc522.PICC_ReadCardSerial()) {
+    return;
+  }
+
+  // Compare the read UID with the allowed UID
+  if (checkUID()) {
+    door = true;
+    Serial.println("Access granted. Door is OPEN!");
+  } else {
+    door = false;
+    Serial.println("Access denied.");
+  }
+
+  // Halt PICC
+  mfrc522.PICC_HaltA();
+}
+
+bool checkUID() {
+  if (mfrc522.uid.size != sizeof(allowedUID)) {
+    return false;
+  }
+
+  for (byte i = 0; i < mfrc522.uid.size; i++) {
+    if (mfrc522.uid.uidByte[i] != allowedUID[i]) {
+      return false;
+    }
+  }
+  return true;
+}
