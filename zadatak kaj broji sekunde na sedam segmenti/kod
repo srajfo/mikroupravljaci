@@ -1,0 +1,74 @@
+int a=2;
+int b=3;
+int c=4;
+int d=5;
+int e=6;
+int f=7;
+int g=8;
+int tipkalo=12;
+int brojac=0;
+
+void setup() {
+  pinMode(a, OUTPUT);
+  pinMode(b, OUTPUT);
+  pinMode(c, OUTPUT);
+  pinMode(d, OUTPUT);
+  pinMode(e, OUTPUT);
+  pinMode(f, OUTPUT);
+  pinMode(g, OUTPUT);
+  pinMode(tipkalo, INPUT_PULLUP);
+  Serial.begin(9600);
+}
+
+
+void gasi(){
+  digitalWrite(a, HIGH);
+  digitalWrite(b, HIGH);
+  digitalWrite(c, HIGH);
+  digitalWrite(d, HIGH);
+  digitalWrite(e, HIGH);
+  digitalWrite(f, HIGH);
+  digitalWrite(g, HIGH);
+}
+
+void prikaz(int broj){
+  if(broj!=1 && broj!=4)
+digitalWrite(a, LOW);
+
+if(broj!=5 && broj!=6)
+digitalWrite(b, LOW);
+
+if(broj!=2)
+digitalWrite(c, LOW);
+
+if(broj!=1 && broj!=4 && broj!=7)
+digitalWrite(d, LOW);
+
+if(broj==0 || broj==2 || broj==6 || broj==8)
+digitalWrite(e, LOW);
+
+if(broj!=1 && broj!=2 && broj!=3 && broj!=7)
+digitalWrite(f, LOW);
+
+if(broj!=0 && broj!=1 && broj!=7)
+digitalWrite(g, LOW);
+}
+
+
+void loop() {
+ if(digitalRead(tipkalo)==LOW){
+  prikaz(brojac);
+  delay(1000);
+  brojac++;
+  gasi();
+  Serial.println(brojac);
+  }
+  else if(digitalRead(tipkalo)==HIGH && brojac>0){
+  int stanje=brojac;
+  prikaz(stanje);
+  brojac=0;
+  }
+  else{
+    brojac=0;
+  }
+}

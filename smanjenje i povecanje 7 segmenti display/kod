@@ -1,0 +1,90 @@
+int a=2;
+int b=3;
+int c=4;
+int d=5;
+int e=6;
+int f=7;
+int g=8;
+int brojac=5;
+int smanji=12;
+int povecaj=13;
+bool prosloStanjePovecaj=false;
+bool trenutnoStanjePovecaj=false;
+bool prosloStanjeSmanji=false;
+bool trenutnoStanjeSmanji=false;
+
+void setup() {
+pinMode(a, OUTPUT);
+pinMode(b, OUTPUT);
+pinMode(c, OUTPUT);
+pinMode(d, OUTPUT);
+pinMode(e, OUTPUT);
+pinMode(f, OUTPUT);
+pinMode(g, OUTPUT);
+pinMode(smanji, INPUT_PULLUP);
+pinMode(povecaj, INPUT_PULLUP);
+}
+
+void gasi()
+{
+  digitalWrite(a, HIGH);
+  digitalWrite(b, HIGH);
+  digitalWrite(c, HIGH);
+  digitalWrite(d, HIGH);
+  digitalWrite(e, HIGH);
+  digitalWrite(f, HIGH);
+  digitalWrite(g, HIGH);
+}
+
+void prikazbroja(int broj)
+{
+
+if(broj!=1 && broj!=4)
+digitalWrite(a, LOW);
+
+if(broj!=5 && broj!=6)
+digitalWrite(b, LOW);
+
+if(broj!=2)
+digitalWrite(c, LOW);
+
+if(broj!=1 && broj!=4 && broj!=7)
+digitalWrite(d, LOW);
+
+if(broj==0 || broj==2 || broj==6 || broj==8)
+digitalWrite(e, LOW);
+
+if(broj!=1 && broj!=2 && broj!=3 && broj!=7)
+digitalWrite(f, LOW);
+
+if(broj!=0 && broj!=1 && broj!=7)
+digitalWrite(g, LOW);
+}
+
+void loop() {
+prikazbroja(brojac);
+  trenutnoStanjePovecaj=digitalRead(povecaj);
+  trenutnoStanjeSmanji=digitalRead(smanji);
+  if(trenutnoStanjePovecaj!=prosloStanjePovecaj)
+  {
+    if(digitalRead(povecaj)==LOW)
+    {
+      brojac++;
+    } 
+  }
+ 
+ if(trenutnoStanjeSmanji!=prosloStanjeSmanji)
+  {
+    if(digitalRead(smanji)==LOW)
+    {
+      brojac--;
+    } 
+  }
+  if(brojac<0)
+    brojac=0;
+  if(brojac>9)
+    brojac=9;
+  prosloStanjePovecaj=trenutnoStanjePovecaj;
+  prosloStanjeSmanji=trenutnoStanjeSmanji;
+gasi();
+}
