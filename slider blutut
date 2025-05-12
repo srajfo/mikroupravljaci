@@ -1,0 +1,24 @@
+#include <Servo.h>
+
+Servo myServo;
+int val;
+String input = "";
+
+void setup() {
+  Serial.begin(9600);
+  myServo.attach(9); // Spoji signal servo motora na pin 9
+}
+
+void loop() {
+  while (Serial.available()) {
+    char c = Serial.read();
+    if (c == '\n') { // '\n' označava kraj poruke
+      val = input.toInt();
+      val = constrain(val, 0, 180);
+      myServo.write(val);
+      input = "";
+    } else {
+      input += c;
+    }
+  }
+}
