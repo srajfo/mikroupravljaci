@@ -1,0 +1,88 @@
+#include <Stepper.h>
+#include <Servo.h>
+#include <LiquidCrystal_I2C.h>
+
+const int stepsPerRevolution = 2048; 
+Servo myServo;
+Stepper stepper(stepsPerRevolution, 10, 12, 11, 13);
+
+int VRx = A0;
+int VRy = A1;
+int lastStep = 0;
+LiquidCrystal_I2C lcd(0x3F, 20, 4);
+
+// Button handling
+bool buttonstate = false;
+bool lastButtonState = HIGH;
+
+void setup() {
+  lcd.init();
+  lcd.backlight();
+  Serial.begin(9600);
+  stepper.setSpeed(10);
+  myServo.attach(9);
+  pinMode(A2, OUTPUT);
+  pinMode(6, OUTPUT);
+  pinMode(7, INPUT_PULLUP); // LED control
+  pinMode(5, INPUT_PULLUP); // Main control button
+}
+
+void loop() {
+  // Read button and update buttonstate on rising edge
+  bool currentButton = digitalRead(5);
+  if (currentButton == LOW && lastButtonState == HIGH) {
+    buttonstate = !buttonstate; // Toggle on each press
+    delay(200); // Debounce delay
+  }
+  lastButtonState = currentButton;
+
+  // Joystick readings
+  int xVal = analogRead(VRx);
+  int yVal = analogRead(VRy);
+  int angle = map(xVal, 0, 1023, 90, -90); 
+  int targetStep = map(angle, -90, 90, -stepsPerRevolution / 4, stepsPerRevolution / 4);
+  int stepsToMove = targetStep - lastStep;
+
+  int servoPomicaj = map(yVal, 0, 1023, 0, 180);
+
+  // Perform movement only if buttonstate is true
+  if (buttonstate) {
+    if (stepsToMove != 0) {
+      stepper.step(stepsToMove);
+      lastStep = targetStep;
+    }
+    myServo.write(servoPomicaj);
+  }
+
+  // LED blinking if button on pin 7 is pressed
+  if (digitalRead(7) == LOW) {
+    for (int i = 0; i < 10; i++) {
+      tone(A2, 1000);
+      digitalWrite(6, HIGH);
+      delay(50);
+      noTone(A2);
+      digitalWrite(6, LOW);
+      delay(50);
+    }
+  } else {
+    digitalWrite(8, LOW);
+    digitalWrite(6, LOW);
+  }
+
+  // LCD Display
+  if(buttonstate)
+  {
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("X: ");
+  lcd.setCursor(3, 0);
+  lcd.print(servoPomicaj - 90);
+
+  lcd.setCursor(0, 1);
+  lcd.print("Y: ");
+  lcd.setCursor(3, 1);
+  lcd.print(angle);
+  }
+
+  delay(100); // Smooth updates
+}
